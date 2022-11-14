@@ -24,6 +24,14 @@ p <- ggplot(df, aes(x=value, fill=subtype))+
   facet_grid(~type)
 ggplotly(p)
 ```
+
+### 2D Histogram
+```{r}
+p <- plot_ly(x = filter(df, type=="A")$value, y = filter(df, type=="B")$value)
+p2<-subplot(p %>% add_markers(alpha=0.4), p%>%add_trace(type='histogram2dcontour'), p%>%add_histogram2d())
+p2
+```
+
 ### Boxplot
 
 ```{r, message=FALSE}
@@ -75,3 +83,50 @@ plot_ly(df, x = ~x) %>%
   add_trace(y=~c, name="scatter markers only", mode = "markers") %>%   #same as scatter plot
   layout(title="Interactive Line Plot with Plotly", yaxis=list(title="value"))
 ```
+### Bar Plot
+```{r}
+# plot_ly(diamonds, x=~cut, color=~clarity, type="histogram")
+plot_ly(count(diamonds, cut, clarity), x=~cut, y=~n, color=~clarity, type="bar", text=~n, marker=list(opacity=0.4, line=list(color='rgba(8,48,148, 1)', width=1.5))) %>% 
+  layout(barmode = 'group')
+```
+
+### Some intersesting examples
+```{r}
+question <- c('The course was effectively<br>organized',
+       'The course developed my<br>abilities and skills for<br>the subject',
+       'I would recommend this<br>course to a friend',
+       'Any other questions')
+df <- data.frame(question, sa=c(21, 24, 27, 29), a=c(30, 31, 26, 24), ne=c(21, 19, 23, 15), ds=c(16, 15, 11, 18), sds=c(12, 11, 13, 14))
+answer_label <- c('Strongly<br>agree', 'Agree', 'Neutral', 'Disagree', 'Strongly<br>disagree')
+p <- plot_ly(df, x=~sa, y=~question, type="bar", orientation="h", marker = list(color = 'rgba(38, 24, 74, 0.8)',
+                      line = list(color = 'rgb(248, 248, 249)', width = 1)))
+p <- p %>% add_trace(x=~a, marker = list(color = 'rgba(71, 58, 131, 0.8)'))
+p <- p %>% add_trace(x=~ne, marker = list(color = 'rgba(122, 120, 168, 0.8)'))
+p <- p %>% add_trace(x=~ds, marker = list(color = 'rgba(164, 163, 204, 0.85)'))
+p <- p %>% add_trace(x=~sds, marker = list(color = 'rgba(190, 192, 213, 1)'))
+p <- p %>% layout(barmode='stack', 
+                  xaxis = list(title = "", showgrid = FALSE,showticklabels = FALSE, zeroline = FALSE),
+                  yaxis=list(title=""), 
+                  paper_bgcolor = 'rgb(248, 248, 255)', plot_bgcolor = 'rgb(248, 248, 255)', margin = list(l = 120, r = 10, t = 40, b = 10),showlegend = FALSE)
+p <- p %>% add_annotations(xref='x', yref='y', x=~sa/2, y=~question, text=paste(df[,"sa"], '%'), font=list(size=12, color="white"), showarrow=FALSE) %>% 
+  add_annotations(x=~sa+a/2, text=paste(df[,"a"], '%'), font=list(size=12, color="white"), showarrow=FALSE)%>% 
+  add_annotations(x=~sa+a+ne/2, text=paste(df[,"ne"], '%'), font=list(size=12, color="white"), showarrow=FALSE)%>% 
+  add_annotations(x=~sa+a+ne+ds/2, text=paste(df[,"ds"], '%'), font=list(size=12, color="white"), showarrow=FALSE)%>%
+  add_annotations(x=~sa+a+ne+ds+sds/2, text=paste(df[,"sds"], '%'), font=list(size=12, color="white"), showarrow=FALSE)
+p <- p %>% add_annotations(xref = 'x', yref = 'paper',
+                  x = c(21 / 2, 21 + 30 / 2, 21 + 30 + 21 / 2, 21 + 30 + 21 + 16 / 2,
+                        21 + 30 + 21 + 16 + 12 / 2), y = 1.05,
+                  text = answer_label,
+                  font = list(size = 12, color = 'rgb(67, 67, 67)'), showarrow = FALSE)
+p
+```
+
+
+
+
+
+
+
+
+
+
