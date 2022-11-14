@@ -1,2 +1,2 @@
 # 5702_CC
-update readme f*** **
+update readme
