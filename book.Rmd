@@ -16,6 +16,27 @@ library(dplyr)
 ```
 
 ## Basic examples
+### Histogram
+```{r}
+df <- data.frame(type =rep(c("A", "B"), each=500), subtype=rep(c("1", "2"), each=250), value = rnorm(1000))
+p <- ggplot(df, aes(x=value, fill=subtype))+
+  geom_histogram(position="identity", alpha=0.5, binwidth=0.2)+
+  facet_grid(~type)
+ggplotly(p)
+```
+### Boxplot
+
+```{r, message=FALSE}
+plot_ly(diamonds, x = ~price/carat, y = ~clarity, color = ~clarity, type = "box") %>%
+  layout(title="Interactive BoxPlot with Plotly")
+# Or 
+p <- ggplot(diamonds, aes(x=clarity, y=price/carat, color=clarity)) +
+  geom_boxplot() + 
+  coord_flip() +
+  ggtitle("BoxPlot with ggplot2")
+# ggplotly(p), also generate interactive graph
+```
+
 
 ### 2D Scatter Plot
 ```{r, message=FALSE}
@@ -27,10 +48,11 @@ plot_ly(filter(diamonds, color=='D'), x = ~carat, y = ~price, color = ~clarity,
   layout(title="Interactive Scatter Plot with Plotly")
 ```
 
-
 ### 3D Scatter Plot
 ```{r, message=FALSE}
-plot_ly(diamonds[sample(nrow(diamonds), 1000), ], x=~price/carat, y=~table, z=~depth, color=~cut, marker = list(size=4, opacity=0.5))
+plot_ly(diamonds[sample(nrow(diamonds), 1000), ], x=~price/carat, y=~table, z=~depth, color=~cut, 
+        marker = list(size=4, opacity=0.5))%>%
+  layout(title="Interactive 3D Scatter Plot with Plotly")
 ```
 
 ```{r, message=FALSE}
@@ -39,15 +61,17 @@ plot_ly(mtcars, x=~mpg, y=~wt, z=~hp, color=~type) %>%
   layout(title="Interactive 3D Scatter Plot with Plotly", scene = list(xaxis = list(title = "mpg"), yaxis = list(title = "weight"), zaxis = list(title = "horsepower")))
 ```
 
-### Boxplot
-```{r, message=FALSE}
-ggplot(diamonds, aes(x=clarity, y=price/carat, color=clarity)) +
-  geom_boxplot() + 
-  coord_flip() +
-  ggtitle("BoxPlot with ggplot2")
-```
 
+### Line Plot
 ```{r, message=FALSE}
-plot_ly(diamonds, x = ~price/carat, y = ~clarity, color = ~clarity, type = "box") %>%
-  layout(title="Interactive BoxPlot with Plotly")
+a <- rnorm(100, 5, 1)
+b <- rnorm(100, 0, 1)
+c <- rnorm(100, -5, 1)
+df <- data.frame(x=c(1:100), a, b, c)
+
+plot_ly(df, x = ~x) %>%
+  add_trace(y = ~a, name="line", type="scatter", mode = "lines", line=list(color='rgb(23, 54, 211)', width=2)) %>% 
+  add_trace(y=~b, name="dot line with markers", mode = "lines+markers", line=list(dash='dot')) %>% 
+  add_trace(y=~c, name="scatter markers only", mode = "markers") %>%   #same as scatter plot
+  layout(title="Interactive Line Plot with Plotly", yaxis=list(title="value"))
 ```
