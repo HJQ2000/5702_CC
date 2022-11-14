@@ -4,7 +4,22 @@
 Jingqi Huang, [NAME 2]
 
 ## Overview
-https://plotly.com/r/basic-charts/
+
+Basic grammar for plotly is simple. We can then create interactive plots of different type by changing the number of variable and graph type. If type and more are not specified, by default will set to what makes most sense. 
+```{r eval=FALSE}
+p <- plot_ly(dataframe, x=~column, y=~column2, type="graph type such as scatter, bar, box, heatmap, etc.", mode="mode type such as markers, lines, and etc.")
+p <-p %>% add_trace()
+p <-p %>% add_notations()
+p <-p %>% layout()
+p
+```
+Multiple parts on the same graph can be added with add_trace() and add changed configurations.
+
+Multiple texts and be set by add_notations() on whatever locations by xref and yref.
+
+Axis and title can be set by layout().
+
+Plotly can convert ggplot graph to interactive mode by wrap ggplot p with ggplotly(p).
 
 ## Install and Packages
 ```{r, results='hide', message=FALSE}
@@ -33,7 +48,6 @@ p2
 ```
 
 ### Boxplot
-
 ```{r, message=FALSE}
 plot_ly(diamonds, x = ~price/carat, y = ~clarity, color = ~clarity, type = "box") %>%
   layout(title="Interactive BoxPlot with Plotly")
@@ -63,7 +77,7 @@ plot_ly(diamonds[sample(nrow(diamonds), 1000), ], x=~price/carat, y=~table, z=~d
   layout(title="Interactive 3D Scatter Plot with Plotly")
 ```
 
-```{r, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 mtcars <- mutate(mtcars, type = case_when(mtcars$am == 0 ~ "Auto", mtcars$am == 1 ~ "Manual"))
 plot_ly(mtcars, x=~mpg, y=~wt, z=~hp, color=~type) %>%
   layout(title="Interactive 3D Scatter Plot with Plotly", scene = list(xaxis = list(title = "mpg"), yaxis = list(title = "weight"), zaxis = list(title = "horsepower")))
@@ -83,6 +97,7 @@ plot_ly(df, x = ~x) %>%
   add_trace(y=~c, name="scatter markers only", mode = "markers") %>%   #same as scatter plot
   layout(title="Interactive Line Plot with Plotly", yaxis=list(title="value"))
 ```
+
 ### Bar Plot
 ```{r}
 # plot_ly(diamonds, x=~cut, color=~clarity, type="histogram")
@@ -90,8 +105,9 @@ plot_ly(count(diamonds, cut, clarity), x=~cut, y=~n, color=~clarity, type="bar",
   layout(barmode = 'group')
 ```
 
+
+```{r echo=FALSE, eval=FALSE}
 ### Some intersesting examples
-```{r}
 question <- c('The course was effectively<br>organized',
        'The course developed my<br>abilities and skills for<br>the subject',
        'I would recommend this<br>course to a friend',
@@ -122,11 +138,23 @@ p
 ```
 
 
+## Animations with Plotly
+```{r}
+df <- data.frame(x = c(1:10), y = rnorm(10), time = c(1:10))
+plot_ly(df, x = ~x, y = ~y, frame = ~time, type = 'scatter', mode = 'markers', showlegend = F)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(gapminder)
+df <- gapminder 
+plot_ly(df, x=~gdpPercap, y=~lifeExp, color=~continent, size=~pop, frame=~year, type="scatter", mode="markers", text=~country, hoverinfo = "text") %>%layout(xaxis = list(type = "log"))
+```
 
 
 
 
-
+## Reference:
+https://plotly.com/r/
 
 
 
