@@ -1,0 +1,53 @@
+# Plotly
+
+# Intro to Plotly in R
+Jingqi Huang, [NAME 2]
+
+## Overview
+https://plotly.com/r/basic-charts/
+
+## Install and Packages
+```{r, results='hide', message=FALSE}
+# install.packages("ggplot2")
+# install.packages("plotly")
+library(ggplot2)
+library(plotly)
+library(dplyr)
+```
+
+## Basic examples
+
+### 2D Scatter Plot
+```{r, message=FALSE}
+plot_ly(filter(diamonds, color=='D'), x = ~carat, y = ~price, color = ~clarity, 
+        marker = list(size=4, opacity=0.5), 
+        # hover text
+        text = ~paste("Price: ", price, "$<br>Cut: ", cut, "<br>Clarity: ", clarity)) %>%
+  # set title and axis
+  layout(title="Interactive Scatter Plot with Plotly")
+```
+
+
+### 3D Scatter Plot
+```{r, message=FALSE}
+plot_ly(diamonds[sample(nrow(diamonds), 1000), ], x=~price/carat, y=~table, z=~depth, color=~cut, marker = list(size=4, opacity=0.5))
+```
+
+```{r, message=FALSE}
+mtcars <- mutate(mtcars, type = case_when(mtcars$am == 0 ~ "Auto", mtcars$am == 1 ~ "Manual"))
+plot_ly(mtcars, x=~mpg, y=~wt, z=~hp, color=~type) %>%
+  layout(title="Interactive 3D Scatter Plot with Plotly", scene = list(xaxis = list(title = "mpg"), yaxis = list(title = "weight"), zaxis = list(title = "horsepower")))
+```
+
+### Boxplot
+```{r, message=FALSE}
+ggplot(diamonds, aes(x=clarity, y=price/carat, color=clarity)) +
+  geom_boxplot() + 
+  coord_flip() +
+  ggtitle("BoxPlot with ggplot2")
+```
+
+```{r, message=FALSE}
+plot_ly(diamonds, x = ~price/carat, y = ~clarity, color = ~clarity, type = "box") %>%
+  layout(title="Interactive BoxPlot with Plotly")
+```
